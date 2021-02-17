@@ -9,7 +9,12 @@ const TextStyle kH4TextStyle = TextStyle(
   fontSize: 19,
 );
 
-const TextStyle kH3TextStyle = TextStyle(
+const TextStyle kH2TextStyle = TextStyle(
   fontWeight: FontWeight.w500,
+  fontSize: 28,
+);
+
+const TextStyle kH1TextStyle = TextStyle(
+  fontWeight: FontWeight.bold,
   fontSize: 28,
 );

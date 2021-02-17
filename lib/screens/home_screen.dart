@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:water_drinking_app/constants.dart';
+import 'package:water_drinking_app/screens/login_screen.dart';
 import 'package:water_drinking_app/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,8 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _fireStore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
 
   final DateTime todayDateTime = DateTime.now();
   int goal;
@@ -32,114 +35,119 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      endDrawer: Container(
-        width: 150,
-        color: kBackgroundColor,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            FlatButton(
-              onPressed: onPressedLogOut,
-              child: Text(
-                'log out',
-                style: kH3TextStyle,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        endDrawer: Container(
+          width: 150,
+          color: kBackgroundColor,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 20,
               ),
-            )
-          ],
+              FlatButton(
+                onPressed: onPressedLogOut,
+                child: Text(
+                  'log out',
+                  style: kH2TextStyle,
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      backgroundColor: kBackgroundColor,
-      body: loading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 30,
-                  width: double.infinity,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        backgroundColor: kBackgroundColor,
+        body: loading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 30,
+                    width: double.infinity,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              date,
+                              style: kH4TextStyle,
+                            ),
+                            Text(
+                              'Daily goal $goal',
+                              style: kH2TextStyle,
+                            ),
+                          ],
+                        ),
+                        DrawerButton(
+                          scaffoldKey: _scaffoldKey,
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 60,
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: CircularPercentIndicator(
+                      radius: 216,
+                      lineWidth: 20,
+                      animation: true,
+                      animateFromLastPercent: true,
+                      percent: startingValue,
+                      center: new Text(
+                        "${waterLeft}ml \nmore",
+                        textAlign: TextAlign.center,
+                        style: new TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                      ),
+                      circularStrokeCap: CircularStrokeCap.round,
+                      progressColor: kAccentColor,
+                      backgroundColor: Colors.white,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            date,
-                            style: kH4TextStyle,
-                          ),
-                          Text(
-                            'Daily goal $goal',
-                            style: kH3TextStyle,
-                          ),
-                        ],
+                      AddWaterButton(
+                        onTap: onPressedSmall,
+                        title: 'Small',
                       ),
-                      DrawerButton(
-                        scaffoldKey: _scaffoldKey,
-                      )
+                      AddWaterButton(
+                        onTap: onPressedMedium,
+                        title: 'Medium',
+                      ),
+                      AddWaterButton(
+                        onTap: onPressedLarge,
+                        title: 'Large',
+                      ),
                     ],
-                  ),
-                ),
-                SizedBox(
-                  height: 60,
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: CircularPercentIndicator(
-                    radius: 216,
-                    lineWidth: 20,
-                    animation: true,
-                    animateFromLastPercent: true,
-                    percent: startingValue,
-                    center: new Text(
-                      "${waterLeft}ml \nmore",
-                      textAlign: TextAlign.center,
-                      style: new TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                        color: Colors.black.withOpacity(0.5),
-                      ),
-                    ),
-                    circularStrokeCap: CircularStrokeCap.round,
-                    progressColor: kAccentColor,
-                    backgroundColor: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AddWaterButton(
-                      onTap: onPressedSmall,
-                      title: 'Small',
-                    ),
-                    AddWaterButton(
-                      onTap: onPressedMedium,
-                      title: 'Medium',
-                    ),
-                    AddWaterButton(
-                      onTap: onPressedLarge,
-                      title: 'Large',
-                    ),
-                  ],
-                )
-              ],
-            ),
+                  )
+                ],
+              ),
+      ),
     );
   }
 
   onPressedLogOut() {
-    Navigator.pop(context);
+    _auth.signOut();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   getData() async {
@@ -167,7 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
           goal = value['goal'];
           waterLeft = value['goal'];
           startingValue = value['value'] == 0 ? 0.0 : value['value'];
-          dailyGoal = value['dailyGoal'];
         });
       } else {
         ///setting data
