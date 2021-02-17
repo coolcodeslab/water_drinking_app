@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -8,13 +7,13 @@ import 'package:water_drinking_app/screens/signup_screen.dart';
 import 'package:water_drinking_app/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const id = 'LoginScreen';
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
-  final _fireStore = FirebaseFirestore.instance;
   String email;
   String password;
   bool showSpinner = false;
@@ -26,6 +25,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: kBackgroundColor,
         body: ModalProgressHUD(
+          progressIndicator: Theme(
+            data: ThemeData(accentColor: kButtonColor),
+            child: CircularProgressIndicator(),
+          ),
           inAsyncCall: showSpinner,
           child: Container(
             padding: EdgeInsets.symmetric(
@@ -53,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFieldWidget(
                   hintText: 'password',
                   onChanged: onChangedPassword,
+                  obscureText: true,
                 ),
                 SizedBox(
                   height: 60,
@@ -81,8 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       if (user != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.pushNamed(context, HomeScreen.id);
       }
     } catch (e) {
       print(e);
@@ -94,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   onTapSignUp() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SingUpScreen()));
+        context, MaterialPageRoute(builder: (context) => SignUpScreen()));
   }
 
   onChangedEmail(n) {

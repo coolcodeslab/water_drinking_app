@@ -1,19 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:water_drinking_app/constants.dart';
-import 'package:water_drinking_app/screens/home_screen.dart';
+import 'package:water_drinking_app/screens/calculate_screen.dart';
 import 'package:water_drinking_app/widgets.dart';
 
-class SingUpScreen extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
+  static const id = 'SingUpScreen';
   @override
-  _SingUpScreenState createState() => _SingUpScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SingUpScreenState extends State<SingUpScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _auth = FirebaseAuth.instance;
-  final _fireStore = FirebaseFirestore.instance;
   String email;
   String password;
   bool showSpinner = false;
@@ -24,9 +23,13 @@ class _SingUpScreenState extends State<SingUpScreen> {
       backgroundColor: kBackgroundColor,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
+        progressIndicator: Theme(
+          data: ThemeData(accentColor: kButtonColor),
+          child: CircularProgressIndicator(),
+        ),
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: 30,
+            horizontal: 40,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,6 +56,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
               TextFieldWidget(
                 hintText: 'password',
                 onChanged: onChangedPassword,
+                obscureText: true,
               ),
               SizedBox(
                 height: 60,
@@ -76,8 +80,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
       final user = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       if (user != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.pushNamed(context, CalculateScreen.id);
       }
     } catch (e) {
       print(e);

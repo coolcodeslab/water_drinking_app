@@ -1,7 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:water_drinking_app/screens/calculate_screen.dart';
+import 'package:water_drinking_app/screens/cupsize_screen.dart';
 import 'package:water_drinking_app/screens/home_screen.dart';
+import 'package:water_drinking_app/screens/loading_screen.dart';
 import 'package:water_drinking_app/screens/login_screen.dart';
+import 'package:water_drinking_app/screens/signup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +24,15 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LoginScreen(),
+      initialRoute: LoginScreen.id,
+      routes: {
+        HomeScreen.id: (context) => HomeScreen(),
+        CalculateScreen.id: (context) => CalculateScreen(),
+        LoadingScreen.id: (context) => LoadingScreen(),
+        SignUpScreen.id: (context) => SignUpScreen(),
+        LoginScreen.id: (context) => LoginScreen(),
+        CupSizeScreen.id: (context) => CupSizeScreen(),
+      },
     );
   }
 }

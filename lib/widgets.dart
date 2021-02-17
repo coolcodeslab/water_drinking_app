@@ -126,9 +126,11 @@ class TextFieldWidget extends StatelessWidget {
   TextFieldWidget({
     this.hintText,
     this.onChanged,
+    this.obscureText = false,
   });
   final String hintText;
   final Function onChanged;
+  final bool obscureText;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -138,6 +140,7 @@ class TextFieldWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextFormField(
+        obscureText: obscureText,
         style: TextStyle(
           color: Colors.black87,
           fontSize: 20,

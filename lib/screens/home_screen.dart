@@ -9,6 +9,7 @@ import 'package:water_drinking_app/screens/login_screen.dart';
 import 'package:water_drinking_app/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const id = 'HomeScreen';
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -19,16 +20,18 @@ class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
 
   final DateTime todayDateTime = DateTime.now();
+  String uid;
+  String date;
   int goal;
   int waterLeft;
   int dailyGoal;
   double startingValue;
   bool loading = false;
-  String date;
 
   @override
   void initState() {
     date = DateFormat('yMMMd').format(todayDateTime);
+    uid = _auth.currentUser.uid;
     getData();
     super.initState();
   }
@@ -60,7 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: kBackgroundColor,
         body: loading
             ? Center(
-                child: CircularProgressIndicator(),
+                child: Theme(
+                  data: ThemeData(accentColor: kButtonColor),
+                  child: CircularProgressIndicator(),
+                ),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,8 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   onPressedLogOut() {
     _auth.signOut();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    Navigator.pushNamed(context, LoginScreen.id);
   }
 
   getData() async {
@@ -155,10 +160,12 @@ class _HomeScreenState extends State<HomeScreen> {
       loading = true;
     });
 
+    print(uid);
+
     ///checking if the document exists
     await _fireStore
         .collection('users')
-        .doc('4zsYjkndqf2kjPTaVHyW')
+        .doc(uid)
         .collection('data')
         .doc(date)
         .get()
@@ -167,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ///setting data
         await _fireStore
             .collection('users')
-            .doc('4zsYjkndqf2kjPTaVHyW')
+            .doc(uid)
             .collection('data')
             .doc(date)
             .get()
@@ -178,20 +185,25 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       } else {
         ///setting data
+
+        await _fireStore.collection('users').doc(uid).get().then((value) {
+          goal = value['goal'];
+        });
+
         await _fireStore
             .collection('users')
-            .doc('4zsYjkndqf2kjPTaVHyW')
+            .doc(uid)
             .collection('data')
             .doc(date)
             .set({
           'value': 0,
-          'goal': 2200,
+          'goal': goal,
         });
 
         ///setting the first data
         await _fireStore
             .collection('users')
-            .doc('4zsYjkndqf2kjPTaVHyW')
+            .doc(uid)
             .collection('data')
             .doc(date)
             .get()
@@ -211,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
   updateValue() {
     _fireStore
         .collection('users')
-        .doc('4zsYjkndqf2kjPTaVHyW')
+        .doc(uid)
         .collection('data')
         .doc(date)
         .update({
